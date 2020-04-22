@@ -1,92 +1,100 @@
 const canvas = document.getElementById('screen');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext("2d");
 
-const user = {
-    x: 0,
-    y: canvas.height / 50,
-    width: 20,
-    height: 20,
-    color: "black",
-    score: 0
-}
+let score;
+let highscore;
+let fullMap;
+let gravity;
+let obstacles;
+let gameSpeed;
+let keys = [];
 
+class Square {
+    constructor(x, y, w, h, c, score) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.c = c;
 
-const fg = {
-    x: 0,
-    y: canvas.height - 50,
-    width: canvas.width,
-    height: 50,
-    color: "black",
-}
-
-const pipeUp = {
-    x: canvas.width / 2,
-    y: 0,
-    width: 50,
-    height: canvas.height / 2,
-    color: "black"
-}
-
-const pipeDown = {
-    x: canvas.width / 2,
-    y: canvas.height - 200,
-    width: 50,
-    height: canvas.height,
-    color: "black"
-}
-
-
-function drawRect(x, y, w, h, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
-};
-
-const gravity = 1;
-user.x = 20;
-user.y = 150;
-
-
-document.addEventListener("keydown", moveUp);
-
-function moveUp() {
-    user.y -= 20;
-}
-
-const gap = 85;
-const constant = pipeUp.height + gap;
-
-let pipe = [];
-
-pipe[0] = {
-    x: canvas.width,
-    y: 0
-}
-
-function draw() {
-    drawRect(0, 0, canvas.width, canvas.height, "white");
-
-    for (let i = 0; i < pipe.length; i++) {
-        drawRect(pipe[i].x, pipe[i].y, pipeUp.width, pipeUp.height, pipeUp.color);
-        drawRect(pipe[i].x, pipe[i].y + constant, pipeDown.width, pipeDown.height, pipeDown.color);
-
-        pipe[i].x--;
-
-        if (pipe[i].x == 125) {
-            pipe.push({
-                x: canvas.width,
-                y: Math.floor(Math.random() * pipeUp.height) - pipeUp.height
-            })
-        }
+        this.score = 0;
+        this.dy = 0;
+        this.jumpForce = 15;
+        this.originalHeight = h;
     }
 
-    drawRect(user.x, user.y, user.width, user.height, user.color);
+    /*Animate() {
+        if () {
 
-    drawRect(fg.x, fg.y, fg.width, fg.height, fg.color);
+        } else {
 
+        }
+    }*/
+    Add_Score() {
+        this.score++;
+    }
 
-    user.y += gravity;
+    Draw() {
+        ctx.beginPath();
+        ctx.fillStyle = this.c;
+        ctx.fillRect(this.x, this.y, this.w, this.h);
+        ctx.closePath();
 
-    requestAnimationFrame(draw);
+    }
+}
+let square_1 = new Square(0, 0, canvas.width / 3, canvas.height / 2 - 5, 'black', 0);
+let square_2 = new Square(canvas.width / 3 + 5, 0, canvas.width / 3 - 5, canvas.height / 2 - 5, 'black', 0);
+let square_3 = new Square(canvas.width - canvas.width / 3 + 5, 0, canvas.width / 3, canvas.height / 2 - 5, 'black', 0);
+let square_4 = new Square(0, canvas.height / 2, canvas.width / 3, canvas.height / 2, 'black', 0);
+let square_5 = new Square(canvas.width / 3 + 5, canvas.height / 2, canvas.width / 3 - 5, canvas.height / 2, 'black', 0);
+let square_6 = new Square(canvas.width - canvas.width / 3 + 5, canvas.height / 2, canvas.width / 3, canvas.height / 2, 'black', 0);
+
+fullMap = [square_1, square_2, square_3, square_4, square_5, square_6
+
+];
+
+function showCoords(event) {
+    let mouse = new Object;
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+
+    return mouse;
 }
 
-draw();
+canvas.addEventListener('click', function(evt) {
+    let mouse = showCoords(evt);
+    switch (showCoords(evt)) {
+        case mouse.x <= square_2.x:
+            console.log("this is square 2");
+    }
+
+})
+
+
+
+function Start() {
+    canvas.width = 600;
+    canvas.height = 300;
+
+    ctx.font = "20px sans-serif";
+
+    gameSpeed = 3;
+    gravity = 1;
+
+    score = 0;
+    highscore = 0;
+
+    requestAnimationFrame(Update);
+
+}
+
+function Update() {
+    requestAnimationFrame(Update);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let items in fullMap) {
+        fullMap[items].Draw();
+    }
+
+}
+
+Start();
