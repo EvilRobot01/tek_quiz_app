@@ -3,17 +3,24 @@ const ctx = canvas.getContext("2d");
 
 let score;
 let highscore;
-let fullMap;
+let gameScreen;
 let gravity;
 let obstacles;
 let gameSpeed;
 let keys = [];
 
-const gameState = { Menu: 0, GameOver: 1, CharacterShow: 2 };
-let currentState;
+const gameState = { Menu: 0, GameScreen: 1, GameOver: 1, CharacterShow: 2 };
+let currentState = gameState.Menu;
+
+function getState() {
+
+
+}
+
+function setState() {}
 
 class Square {
-    constructor(x, y, w, h, c, score) {
+    constructor(x, y, w, h, c) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -21,9 +28,6 @@ class Square {
         this.c = c;
 
         this.score = 0;
-        this.dy = 0;
-        this.jumpForce = 15;
-        this.originalHeight = h;
     }
 
     /*Animate() {
@@ -45,18 +49,19 @@ class Square {
 
     }
 }
-let square_1 = new Square(0, 0, canvas.width / 3, canvas.height / 2 - 5, 'black', 0);
-let square_2 = new Square(canvas.width / 3 + 5, 0, canvas.width / 3 - 5, canvas.height / 2 - 5, 'black', 0);
-let square_3 = new Square(canvas.width - canvas.width / 3 + 5, 0, canvas.width / 3, canvas.height / 2 - 5, 'black', 0);
-let square_4 = new Square(0, canvas.height / 2, canvas.width / 3, canvas.height / 2, 'black', 0);
-let square_5 = new Square(canvas.width / 3 + 5, canvas.height / 2, canvas.width / 3 - 5, canvas.height / 2, 'black', 0);
-let square_6 = new Square(canvas.width - canvas.width / 3 + 5, canvas.height / 2, canvas.width / 3, canvas.height / 2, 'black', 0);
 
-fullMap = [square_1, square_2, square_3, square_4, square_5, square_6
-
+gameScreen = [new Square(0, 0, canvas.width / 3, canvas.height / 2 - 5, 'black'),
+    new Square(canvas.width / 3 + 5, 0, canvas.width / 3 - 5, canvas.height / 2 - 5, 'black'),
+    new Square(canvas.width - canvas.width / 3 + 5, 0, canvas.width / 3, canvas.height / 2 - 5, 'black'),
+    new Square(0, canvas.height / 2, canvas.width / 3, canvas.height / 2, 'black', 0),
+    new Square(canvas.width / 3 + 5, canvas.height / 2, canvas.width / 3 - 5, canvas.height / 2, 'black'),
+    new Square(canvas.width - canvas.width / 3 + 5, canvas.height / 2, canvas.width / 3, canvas.height / 2, 'black')
 ];
 
-function showCoords(event) {
+let menu = new Square(canvas.width / 3, canvas.height / 3, canvas.width / 3, canvas.height / 3, 'black');
+
+
+function showCoords(evt) {
     let mouse = new Object;
     mouse.x = event.clientX;
     mouse.y = event.clientY;
@@ -64,23 +69,49 @@ function showCoords(event) {
     return mouse;
 }
 
-/*Mouse event*/
-canvas.addEventListener('click', function(evt) {
-    let mouse = showCoords(evt);
-    console.log(mouse.x, mouse.y);
+function setCoord(evt) {
+    return showCoords(evt).x > evt.x && showCoords(evt).y > evt.y && showCoords(evt).x < evt.w + evt.x && showCoords(evt).y < evt.h + evt.y;
+}
 
-    if (mouse.x > square_1.x && mouse.y > square_1.y && mouse.x < square_1.w && mouse.y < square_1.h) {
-        console.log("this is square 1");
-        square_1.Add_Score();
-        console.log("square 1: " + square_1.score);
-    } else if ((mouse.x > square_2.x && mouse.y > square_2.y && mouse.x < square_2.w + square_2.x && mouse.y < square_2.h + square_2.y)) {
-        console.log("this is square 2");
-        square_2.Add_Score();
-        console.log("square 2: " + square_2.score);
-    } else if ((mouse.x > square_3.x && mouse.y > square_3.y && mouse.x < square_3.w + square_3.x && mouse.y < square_3.h + square_3.y)) {
-        console.log("this is square 3");
-        square_3.Add_Score();
-        console.log("square 3: " + square_3.score);
+//Mouse event
+canvas.addEventListener('click', function(evt) {
+
+    //Menu screen
+    if (currentState == gameState.Menu) {
+        if (setCoord(menu)) {
+            console.log("Hey, you started ");
+            currentState = gameState.GameScreen;
+        }
+    }
+
+    //Game Screen
+    if (currentState == gameState.GameScreen) {
+        if (setCoord(gameScreen[0])) {
+            console.log("this is gameScreen[0]");
+            gameScreen[0].Add_Score();
+            console.log("gameScreen[0]: " + gameScreen[0].score);
+        } else if (setCoord(gameScreen[1])) {
+            console.log("this is gameScreen[1]");
+            gameScreen[1].Add_Score();
+            console.log("gameScreen[1]: " + gameScreen[1].score);
+        } else if (setCoord(gameScreen[2])) {
+            console.log("this is gameScreen[2]");
+            gameScreen[2].Add_Score();
+            console.log("gameScreen[2]: " + gameScreen[2].score);
+        } else if (setCoord(gameScreen[3])) {
+            console.log("this is gameScreen[3]");
+            gameScreen[3].Add_Score();
+            console.log("gameScreen[3]: " + gameScreen[3].score);
+        } else if (setCoord(gameScreen[4])) {
+            console.log("this is gameScreen[1]");
+            gameScreen[4].Add_Score();
+            console.log("gameScreen[4]: " + gameScreen[4].score);
+        } else if (setCoord(gameScreen[5])) {
+            console.log("this is gameScreen[5]");
+            gameScreen[5].Add_Score();
+            console.log("gameScreen[5]: " + gameScreen[5].score);
+
+        }
     }
 })
 
@@ -99,20 +130,20 @@ function Start() {
     highscore = 0;
 
     requestAnimationFrame(Update);
-
-    currentState = gameState.Menu;
-    if (fullMap[0].score == 5) {
-        currentState = gameState.CharacterShow;
-        console.log(currentState);
-    }
-
 }
 
 function Update() {
     requestAnimationFrame(Update);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let items in fullMap) {
-        fullMap[items].Draw();
+    if (currentState == gameState.Menu) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        menu.Draw();
+
+    }
+    if (currentState == gameState.GameScreen) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let items in gameScreen) {
+            gameScreen[items].Draw();
+        }
     }
 
 }
