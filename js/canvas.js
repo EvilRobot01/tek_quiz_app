@@ -9,6 +9,9 @@ let obstacles;
 let gameSpeed;
 let keys = [];
 
+const gameState = { Menu: 0, GameOver: 1, CharacterShow: 2 };
+let currentState;
+
 class Square {
     constructor(x, y, w, h, c, score) {
         this.x = x;
@@ -90,12 +93,18 @@ function Start() {
     ctx.font = "20px sans-serif";
 
     gameSpeed = 3;
-    gravity = 1;
+
 
     score = 0;
     highscore = 0;
 
     requestAnimationFrame(Update);
+
+    currentState = gameState.Menu;
+    if (fullMap[0].score == 5) {
+        currentState = gameState.CharacterShow;
+        console.log(currentState);
+    }
 
 }
 
